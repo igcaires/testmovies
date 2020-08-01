@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:testmovies/common/toast.dart';
 import 'package:testmovies/models/full_movie.dart';
 import 'package:testmovies/models/movie.dart';
 
@@ -26,6 +27,7 @@ class ApiRepository {
 
       return retorno;
     } catch (e) {
+      showError('Application without connection to the server');
       throw e;
     }
   }
@@ -42,6 +44,7 @@ class ApiRepository {
 
       retorno = FullMovie.fromJson(response.data);
     } catch (e) {
+      showError('Application without connection to the server');
       throw e;
     }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:testmovies/common/loading.dart';
 import 'package:testmovies/models/full_movie.dart';
 
 import 'package:testmovies/models/movie.dart';
@@ -16,6 +17,8 @@ class MovieTile extends StatefulWidget {
 }
 
 class _MovieTileState extends State<MovieTile> {
+  Loading pr;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -50,26 +53,45 @@ class _MovieTileState extends State<MovieTile> {
                 fontSize: 18,
               ),
             ),
-            trailing: Text(
-              widget.movie.voteAverage.toString(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+            trailing: Column(
+              children: <Widget>[
+                Icon(
+                  Icons.star,
+                  color: Colors.yellow,
+                ),
+                Text(
+                  widget.movie.voteAverage.toString(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
             ),
             isThreeLine: true,
           ),
         ),
         onTap: () async {
-          FullMovie fullMovie = await ApiRepository().getMovie(widget.movie.id);
+          pr = Loading(context);
 
-          if (fullMovie == null) return;
+          try {
+            await pr.openLoading();
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MoviePage(fullMovie)),
-          );
+            FullMovie fullMovie =
+                await ApiRepository().getMovie(widget.movie.id);
+
+            await pr.hideLoading();
+            if (fullMovie == null) return;
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MoviePage(fullMovie)),
+            );
+          } catch (e) {
+            await pr.hideLoading();
+            throw e;
+          }
         },
       ),
     );

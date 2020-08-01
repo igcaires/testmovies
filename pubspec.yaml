@@ -33,6 +33,7 @@ dependencies:
   url_launcher: ^5.5.0
   progress_dialog: ^1.2.4
   fluttertoast: ^7.0.2
+  shared_preferences: ^0.5.8
 
 dev_dependencies:
   flutter_test:

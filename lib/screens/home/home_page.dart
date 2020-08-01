@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:testmovies/common/shared_pref.dart';
 import 'package:testmovies/models/movie.dart';
 import 'package:testmovies/repository/api_repository.dart';
 import 'package:testmovies/screens/home/movie_tile_widget.dart';
@@ -14,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Movie> _movies = [];
+  SharedPref sharedPref = SharedPref();
 
   @override
   void initState() {
@@ -27,11 +29,26 @@ class _HomePageState extends State<HomePage> {
       List<Movie> response = await ApiRepository().getMovies();
 
       if (response != null) {
+        sharedPref.remove('movies');
+        sharedPref.save('movies', response);
+
         setState(() {
           this._movies = response;
         });
       }
     } catch (e) {
+      var movies = await sharedPref.read('movies');
+
+      if (movies != null) {
+        List<Movie> movieList = [];
+
+        movies.forEach((e) => movieList.add(Movie.fromJson(e)));
+
+        setState(() {
+          this._movies = movieList;
+        });
+      }
+
       throw e;
     }
   }

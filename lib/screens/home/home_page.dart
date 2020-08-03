@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
       List<Movie> response = await ApiRepository().getMovies();
 
       if (response != null) {
-        sharedPref.remove('movies');
         sharedPref.save('movies', response);
 
         setState(() {
@@ -37,16 +36,20 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (e) {
-      var movies = await sharedPref.read('movies');
+      try {
+        var movies = await sharedPref.read('movies');
 
-      if (movies != null) {
-        List<Movie> movieList = [];
+        if (movies != null) {
+          List<Movie> movieList = [];
 
-        movies.forEach((e) => movieList.add(Movie.fromJson(e)));
+          movies.forEach((e) => movieList.add(Movie.fromJson(e)));
 
-        setState(() {
-          this._movies = movieList;
-        });
+          setState(() {
+            this._movies = movieList;
+          });
+        }
+      } catch (e) {
+        throw e;
       }
 
       throw e;
